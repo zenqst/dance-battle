@@ -7,6 +7,10 @@ window.onload = function () {
 
 // --- ФУНКЦИИ ---
 
+function wait(seconds) {
+	return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
 function saveWinsToLocalStorage(data) {
 	localStorage.setItem('wins', JSON.stringify(data));
 }
@@ -31,6 +35,9 @@ function setWins(amount) {
 }
 
 function displayPlayerHero(hero) {
+	const heading = document.querySelector('.page-heading');
+	heading.innerHTML = 'Heroes Dance Battle 💃';
+
 	document.getElementById('playerHeroClass').innerHTML = gameClasses[hero.constructor.name];
 	document.getElementById('playerHeroName').innerHTML = hero.name;
 	document.getElementById('playerHeroLevel').innerHTML = hero.level;
@@ -40,14 +47,6 @@ function displayPlayerHero(hero) {
 	document.getElementById('playerHeroAgility').innerHTML = hero.stats.agi;
 
 	hero.displayHero();
-}
-
-function sendMaxAlert(num, max) {
-	alert(`Вы ввели уровень характеристики (${num}) выше ${max}! Характеристика была выбрана случайно.`);
-
-	let randomNum = Math.round(Math.random() * max);
-
-	return randomNum;
 }
 
 function displayEnemyHero(hero) {
@@ -74,18 +73,14 @@ function countStatsSum(hero) {
 		statsSum += 50;
 		console.log('Дополнительные 50 очков');
 	}
-	
-	if (hero === playerHero) {
-		const wins = getWinsFromLocalStorage()
 
-		statsSum += wins
+	if (hero === playerHero) {
+		const wins = getWinsFromLocalStorage();
+
+		statsSum += wins;
 	}
 
 	return statsSum;
-}
-
-function wait(seconds) {
-	return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
 function clearCards() {
@@ -94,19 +89,18 @@ function clearCards() {
 
 	document.getElementById('playerHeroClass').innerHTML = 'Класс';
 	document.getElementById('playerHeroName').innerHTML = 'Имя героя';
-	document.getElementById('playerHeroLevel').innerHTML = '--';
-	document.getElementById('playerHeroHp').innerHTML = '--';
-	document.getElementById('playerHeroStrength').innerHTML = '--';
-	document.getElementById('playerHeroIntelligence').innerHTML = '--';
-	document.getElementById('playerHeroAgility').innerHTML = '--';
 
 	document.getElementById('enemyHeroClass').innerHTML = 'Класс';
 	document.getElementById('enemyHeroName').innerHTML = 'Имя героя';
-	document.getElementById('enemyHeroLevel').innerHTML = '--';
-	document.getElementById('enemyHeroHp').innerHTML = '--';
-	document.getElementById('enemyHeroStrength').innerHTML = '--';
-	document.getElementById('enemyHeroIntelligence').innerHTML = '--';
-	document.getElementById('enemyHeroAgility').innerHTML = '--';
+
+	const elements = document.querySelectorAll(
+		'#playerHeroLevel, #playerHeroHp, #playerHeroStrength, #playerHeroIntelligence, #playerHeroAgility, ' +
+			'#enemyHeroLevel, #enemyHeroHp, #enemyHeroStrength, #enemyHeroIntelligence, #enemyHeroAgility'
+	);
+
+	for (const element of elements) {
+		element.innerHTML = '--';
+	}
 }
 
 async function arena(playerHero, enemyHero) {
@@ -164,10 +158,23 @@ function doSkill(hero, heroClass) {
 	}
 }
 
+function validationNumbers(num, max) {
+	if (num > max) {
+		const heading = document.querySelector('.page-heading');
+		heading.innerHTML = '⚠️ Некоторые ваши параметры были выбраны рандомно';
+
+		let randomNum = Math.round(Math.random() * max);
+
+		return randomNum;
+	}
+
+	return num;
+}
+
 // --- ФУНКЦИИ ---
 // --- РЕАКЦИИ НА КЛИК ---
 
-sendToBattleButton.onclick = () => {
+sendToBattleButton.onclick = async () => {
 	const heroName = document.getElementById('name').value.trim();
 	if (heroName !== '') {
 		const heroClass = document.querySelector('input[name="class"]:checked').value;
@@ -176,30 +183,15 @@ sendToBattleButton.onclick = () => {
 		const additionalAbility = document.querySelector('input[name="additionalAbility"]:checked').value;
 		const additionalStat = document.getElementById('additionalStat').value;
 
+		heroLevel = Number(heroLevel);
 		heroStats.str = Number(document.getElementById('strength').value);
 		heroStats.int = Number(document.getElementById('intelligence').value);
 		heroStats.agi = Number(document.getElementById('agility').value);
 
-		heroLevel = Number(heroLevel);
-		if (heroLevel > gameParameters.MAX_LEVEL) {
-			let randomNum = sendMaxAlert(heroLevel, gameParameters.MAX_LEVEL);
-			heroLevel = randomNum;
-		}
-		heroStats.str = Number(document.getElementById('strength').value);
-		if (heroStats.str > gameParameters.MAX_STAT) {
-			let randomNum = sendMaxAlert(heroStats.str, gameParameters.MAX_STAT);
-			heroStats.str = randomNum;
-		}
-		heroStats.int = Number(document.getElementById('intelligence').value);
-		if (heroStats.int > gameParameters.MAX_STAT) {
-			let randomNum = sendMaxAlert(heroStats.int, gameParameters.MAX_STAT);
-			heroStats.int = randomNum;
-		}
-		heroStats.agi = Number(document.getElementById('agility').value);
-		if (heroStats.agi > gameParameters.MAX_STAT) {
-			let randomNum = sendMaxAlert(heroStats.agi, gameParameters.MAX_STAT);
-			heroStats.agi = randomNum;
-		}
+		heroLevel = validationNumbers(heroLevel, gameParameters.MAX_LEVEL);
+		heroStats.str = validationNumbers(heroStats.str, gameParameters.MAX_STAT);
+		heroStats.int = validationNumbers(heroStats.int, gameParameters.MAX_STAT);
+		heroStats.agi = validationNumbers(heroStats.agi, gameParameters.MAX_STAT);
 
 		if (heroClass === 'Mage') {
 			playerHero = new Mage(heroName, heroLevel, 100, heroStats, additionalAbility, additionalStat);
@@ -210,7 +202,14 @@ sendToBattleButton.onclick = () => {
 			return;
 		}
 
+		sendToBattleButton.innerHTML = '🕓 Отправляем...';
+		sendToBattleButton.setAttribute('disabled', 'disabled');
+
+		await wait(2);
 		displayPlayerHero(playerHero);
+
+		sendToBattleButton.innerHTML = 'Отправить на танцпол';
+		sendToBattleButton.removeAttribute('disabled');
 		getEnemyButton.removeAttribute('disabled');
 		doSkillButton.removeAttribute('disabled');
 	} else {
