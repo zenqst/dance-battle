@@ -41,6 +41,7 @@ button:disabled {
 header {
 	background: #ffffff80;
 	backdrop-filter: blur(4px);
+	position: sticky;
 }
 main {
 	flex: 1;
