@@ -7,7 +7,7 @@ const gameParameters = {
 const gameClasses = {
 	Mage: 'Маг',
 	Knight: 'Рыцарь',
-	Hero: 'Класс'
+	Hero: 'Герой'
 };
 
 let playerHero = null;
@@ -17,3 +17,5 @@ const sendToBattleButton = document.getElementById('sendToBattleButton');
 const getEnemyButton = document.getElementById('getEnemyButton');
 const doSkillButton = document.getElementById('doSkillButton');
 const startBattleButton = document.getElementById('startBattleButton');
+const heading = document.querySelector('.page-heading');
+const balance = document.querySelector('.page-subheading');

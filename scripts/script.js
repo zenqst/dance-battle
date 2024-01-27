@@ -1,5 +1,4 @@
 window.onload = function () {
-	const balance = document.querySelector('.page-subheading');
 	let data = getWinsFromLocalStorage();
 
 	balance.innerHTML = `${data} 🏆`;
@@ -26,7 +25,6 @@ function getWinsFromLocalStorage() {
 }
 
 function setWins(amount) {
-	const balance = document.querySelector('.page-subheading');
 	let data = getWinsFromLocalStorage();
 	data += amount;
 
@@ -35,9 +33,6 @@ function setWins(amount) {
 }
 
 function displayPlayerHero(hero) {
-	const heading = document.querySelector('.page-heading');
-	heading.innerHTML = 'Heroes Dance Battle 💃';
-
 	document.getElementById('playerHeroClass').innerHTML = gameClasses[hero.constructor.name];
 	document.getElementById('playerHeroName').innerHTML = hero.name;
 	document.getElementById('playerHeroLevel').innerHTML = hero.level;
@@ -104,7 +99,6 @@ function clearCards() {
 }
 
 async function arena(playerHero, enemyHero) {
-	const heading = document.querySelector('.page-heading');
 	heading.innerHTML = `🕺 Проходит баттл между ${playerHero.name} и ${enemyHero.name}!`;
 
 	startBattleButton.setAttribute('disabled', 'disabled');
@@ -148,7 +142,7 @@ async function arena(playerHero, enemyHero) {
 	clearCards();
 }
 
-function doSkill(hero, heroClass) {
+async function doSkill(hero, heroClass) {
 	if (heroClass == 'Маг') {
 		hero.healHero(hero);
 	} else if (heroClass == 'Рыцарь') {
@@ -156,11 +150,13 @@ function doSkill(hero, heroClass) {
 	} else {
 		console.log('Класс не найден');
 	}
+
+	await wait(3);
+	heading.innerHTML = 'Heroes Dance Battle 💃';
 }
 
 function validationNumbers(num, max) {
 	if (num > max) {
-		const heading = document.querySelector('.page-heading');
 		heading.innerHTML = '⚠️ Некоторые ваши параметры были выбраны рандомно';
 
 		let randomNum = Math.round(Math.random() * max);

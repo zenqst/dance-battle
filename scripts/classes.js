@@ -43,8 +43,7 @@ class Knight extends Hero {
 			if (this.stats.agi + gainAmount < gameParameters.MAX_STAT) {
 				this.stats.agi += gainAmount;
 
-				const subheading = document.querySelector('.page-subheading');
-				console.log(this.name + ' увеличивает ловкость ' + this.name + ' на ' + gainAmount + ' единиц.');
+				heading.innerHTML = `💪 ${this.name} увеличивает ловкость на ${gainAmount}`;
 			} else {
 				this.stats.agi = gameParameters.MAX_STAT;
 			}
@@ -58,7 +57,7 @@ class Knight extends Hero {
 
 			displayPlayerHero(hero);
 		} else {
-			console.log('Слишком мало энергии...');
+			heading.innerHTML = '😓 Слишком мало энергии...';
 		}
 	}
 }
@@ -86,12 +85,12 @@ class Mage extends Hero {
 			const healAmount = this.level * 10;
 
 			this.healthPoints += healAmount;
-			console.log(this.name + ' продлевает танец ' + this.name + ' на ' + healAmount + ' единиц.');
+			heading.innerHTML = `👌 ${this.name} увеличивает ХП на ${healAmount}`;
 
 			this.mana -= healAmount * (10 / this.level) - this.level;
 			displayPlayerHero(hero);
 		} else {
-			console.log('Слишком мало маны...');
+			heading.innerHTML = '😓 Слишком мало маны...';
 		}
 	}
 }
