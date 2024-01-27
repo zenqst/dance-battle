@@ -39,9 +39,11 @@ button:disabled {
 	background: linear-gradient(90deg, #828282 0%, #ffffff80 100%);
 }
 header {
+	position: sticky;
+	top: 0px;
+	z-index: 1;
 	background: #ffffff80;
 	backdrop-filter: blur(4px);
-	position: sticky;
 }
 main {
 	flex: 1;
